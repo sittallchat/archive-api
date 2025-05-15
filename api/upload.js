@@ -15,7 +15,7 @@ async function handler(req, res) {
     return res.status(405).send("Sadece POST istekleri destekleniyor.");
   }
 
-  const form = formidable({ uploadDir: '/tmp', keepExtensions: true });
+  const form = new formidable.IncomingForm({ uploadDir: '/tmp', keepExtensions: true });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
