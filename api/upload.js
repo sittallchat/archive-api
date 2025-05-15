@@ -29,7 +29,7 @@ const handler = async (req, res) => {
     }
 
     const filePath = file.filepath || file.path;
-    if (!filePath || typeof filePath !== 'string') {
+    if (typeof filePath !== 'string') {
       return res.status(400).send("Geçersiz dosya yolu.");
     }
 
@@ -38,7 +38,7 @@ const handler = async (req, res) => {
     const secret = process.env.ARCHIVE_PASS;
 
     if (!access || !secret) {
-      return res.status(500).send("Gerekli kimlik bilgileri ayarlanmamış.");
+      return res.status(500).send("Kimlik bilgileri eksik.");
     }
 
     const identifier = `upload-${Date.now()}`;
