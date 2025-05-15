@@ -28,8 +28,9 @@ async function handler(req, res) {
     const access = process.env.ARCHIVE_USER;
     const secret = process.env.ARCHIVE_PASS;
 
-    const identifier = upload-${Date.now()};
-    const uploadUrl = https://${access}:${secret}@s3.us.archive.org/${identifier}/${fileName};
+    // Burada kesinlikle backtick kullandığına emin ol
+    const identifier = `upload-${Date.now()}`;
+    const uploadUrl = `https://${access}:${secret}@s3.us.archive.org/${identifier}/${fileName}`;
 
     const options = {
       method: 'PUT',
@@ -43,7 +44,7 @@ async function handler(req, res) {
       if (uploadRes.statusCode === 200) {
         res.status(200).json({
           message: 'Dosya archive.org’a yüklendi!',
-          url: https://archive.org/download/${identifier}/${fileName},
+          url: `https://archive.org/download/${identifier}/${fileName}`,
         });
       } else {
         res.status(uploadRes.statusCode).send("Archive.org yükleme hatası.");
