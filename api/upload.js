@@ -2,7 +2,7 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const allowCors = require('https://sittallchat.github.io/lib/cors');
+const allowCors = require('../lib/cors');  // Doğru dosya yolunu kullan
 
 module.exports.config = {
   api: {
