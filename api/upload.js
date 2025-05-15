@@ -2,7 +2,7 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const allowCors = require('../lib/cors');  // Doğru dosya yolunu kullandığından emin ol
+const allowCors = require('../lib/cors');
 
 module.exports.config = {
   api: {
@@ -15,7 +15,7 @@ async function handler(req, res) {
     return res.status(405).send("Sadece POST istekleri destekleniyor.");
   }
 
-  const form = new formidable.IncomingForm({ uploadDir: '/tmp', keepExtensions: true });
+  const form = formidable({ uploadDir: '/tmp', keepExtensions: true });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
@@ -23,14 +23,18 @@ async function handler(req, res) {
     }
 
     const file = files.file;
-    const filePath = file.filepath;
+    const filePath = file?.filepath || file?.path;
+
+    if (!filePath) {
+      return res.status(400).send("Dosya alınamadı.");
+    }
+
     const fileName = path.basename(filePath);
     const access = process.env.ARCHIVE_USER;
     const secret = process.env.ARCHIVE_PASS;
 
-    // Burada kesinlikle backtick kullandığına emin ol
-    const identifier = `upload-${Date.now()}`;
-    const uploadUrl = `https://${access}:${secret}@s3.us.archive.org/${identifier}/${fileName}`;
+    const identifier = upload-${Date.now()};
+    const uploadUrl = https://${access}:${secret}@s3.us.archive.org/${identifier}/${fileName};
 
     const options = {
       method: 'PUT',
@@ -44,7 +48,7 @@ async function handler(req, res) {
       if (uploadRes.statusCode === 200) {
         res.status(200).json({
           message: 'Dosya archive.org’a yüklendi!',
-          url: `https://archive.org/download/${identifier}/${fileName}`,
+          url: https://archive.org/download/${identifier}/${fileName},
         });
       } else {
         res.status(uploadRes.statusCode).send("Archive.org yükleme hatası.");
@@ -52,7 +56,7 @@ async function handler(req, res) {
     });
 
     fs.createReadStream(filePath).pipe(reqUpload);
-    reqUpload.on('error', () => res.status(500).send("Hata oluştu."));
+    reqUpload.on('error', () => res.status(500).send("Yükleme sırasında hata oluştu."));
   });
 }
 
