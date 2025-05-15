@@ -2,7 +2,7 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const allowCors = require('../lib/cors');  // Doğru dosya yolunu kullan
+const allowCors = require('../lib/cors');  // Doğru dosya yolunu kullandığından emin ol
 
 module.exports.config = {
   api: {
