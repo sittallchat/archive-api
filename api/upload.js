@@ -2,9 +2,9 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const allowCors = require('https://sittall.github.io/lib/cors');
+const allowCors = require('https://sittallchat.github.io/lib/cors');
 
-export const config = {
+module.exports.config = {
   api: {
     bodyParser: false,
   },
@@ -55,4 +55,4 @@ async function handler(req, res) {
   });
 }
 
-export default allowCors(handler);
+module.exports = allowCors(handler);
