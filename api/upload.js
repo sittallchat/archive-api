@@ -1,4 +1,4 @@
-import formidable from 'formidable';
+import { IncomingForm } from 'formidable';
 
 export const config = {
   api: {
@@ -6,21 +6,24 @@ export const config = {
   },
 };
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send("Sadece POST istekleri destekleniyor.");
   }
 
-  const form = new formidable.IncomingForm({ uploadDir: "/tmp", keepExtensions: true });
+  const form = new IncomingForm({ uploadDir: "/tmp", keepExtensions: true });
 
   form.parse(req, (err, fields, files) => {
     if (err) {
       console.error(err);
-      return res.status(500).send("Yüleme sırasında hata oluştu.");
+      return res.status(500).send("Yükleme sırasında hata oluştu.");
     }
 
-    console.log("Yülenen dosya:", files.file);
-
-    res.status(200).send("Dosya başarıyla yülendi.");
+    console.log("Yüklenen dosya:", files.file);
+    res.status(200).json({
+      message: "Dosya başarıyla yüklendi.",
+      filename: files.file.originalFilename,
+      size: files.file.size
+    });
   });
 }
