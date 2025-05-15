@@ -2,6 +2,7 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const allowCors = require('https://sittall.github.io/lib/cors');
 
 export const config = {
   api: {
@@ -9,17 +10,7 @@ export const config = {
   },
 };
 
-export default async function handler(req, res) {
-  // CORS headers – her istekte eklenmeli
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  // Preflight kontrolü (OPTIONS isteği)
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send("Sadece POST istekleri destekleniyor.");
   }
@@ -43,7 +34,7 @@ export default async function handler(req, res) {
     const options = {
       method: 'PUT',
       headers: {
-        'Content-Type': file.mimetype,
+        'Content-Type': file.mimetype || 'application/octet-stream',
         'Content-Length': file.size,
       }
     };
@@ -63,3 +54,5 @@ export default async function handler(req, res) {
     reqUpload.on('error', () => res.status(500).send("Hata oluştu."));
   });
 }
+
+export default allowCors(handler);
