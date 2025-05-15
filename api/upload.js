@@ -1,4 +1,4 @@
-const formidable = require('formidable');
+const formidable = require('formidable').IncomingForm;
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -15,7 +15,7 @@ async function handler(req, res) {
     return res.status(405).send("Sadece POST istekleri destekleniyor.");
   }
 
-  const form = formidable({ uploadDir: '/tmp', keepExtensions: true });
+  const form = new formidable({ uploadDir: '/tmp', keepExtensions: true });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
@@ -23,12 +23,7 @@ async function handler(req, res) {
     }
 
     const file = files.file;
-    const filePath = file?.filepath || file?.path;
-
-    if (!filePath) {
-      return res.status(400).send("Dosya alınamadı.");
-    }
-
+    const filePath = file.filepath || file.path; // hangisi varsa
     const fileName = path.basename(filePath);
     const access = process.env.ARCHIVE_USER;
     const secret = process.env.ARCHIVE_PASS;
@@ -56,7 +51,7 @@ async function handler(req, res) {
     });
 
     fs.createReadStream(filePath).pipe(reqUpload);
-    reqUpload.on('error', () => res.status(500).send("Yükleme sırasında hata oluştu."));
+    reqUpload.on('error', () => res.status(500).send("Hata oluştu."));
   });
 }
 
