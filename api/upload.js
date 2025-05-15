@@ -15,17 +15,17 @@ const handler = async (req, res) => {
     return res.status(405).send("Sadece POST istekleri destekleniyor.");
   }
 
-  const form = new IncomingForm({ uploadDir: '/tmp', keepExtensions: true });
+  const form = new IncomingForm({ uploadDir: '/tmp', keepExtensions: true, multiples: false });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      console.error('Form parse hatası:', err);
-      return res.status(500).send("Form verisi işlenemedi.");
+      console.error('Parse hatası:', err);
+      return res.status(500).send("Form parse hatası.");
     }
 
-    const file = files.file;
+    const file = Array.isArray(files.file) ? files.file[0] : files.file;
     if (!file) {
-      return res.status(400).send("Dosya bulunamadı.");
+      return res.status(400).send("Dosya alınamadı.");
     }
 
     const filePath = file.filepath || file.path;
@@ -65,7 +65,7 @@ const handler = async (req, res) => {
     });
 
     uploadReq.on('error', (e) => {
-      console.error('HTTPS yükleme hatası:', e);
+      console.error('Upload Hatası:', e);
       return res.status(500).send("Yükleme sırasında hata oluştu.");
     });
 
